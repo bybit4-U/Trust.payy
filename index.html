@@ -3,185 +3,180 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>USDT Withdrawal</title>
+  <title>Transaction processing — Clone (edited)</title>
   <style>
-    :root{--bg:#f6f7fb;--card:#fff;--accent:#d9a818;--muted:#6b7280;--danger:#c0392b;--ok:#16a34a}
-    body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;padding:24px;background:var(--bg);color:#111}
-    .container{max-width:880px;margin:0 auto}
-    .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 20px rgba(15,23,42,0.06);margin-bottom:16px}
-    h1{font-size:20px;margin:0 0 8px;color:#0f172a}
-    p.lead{margin:0 0 16px;color:var(--muted)}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .col{flex:1;min-width:220px}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="number"]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px}
-    .summary{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .big{font-weight:700;font-size:20px}
-    .muted{color:var(--muted)}
-    button{background:var(--accent);border:none;padding:10px 12px;color:#fff;border-radius:8px;cursor:pointer}
-    button.secondary{background:#eef2ff;color:#1e293b}
-    .small-btn{padding:8px 10px;font-size:13px;border-radius:6px}
-    .checklist{margin-top:12px}
-    ul{margin:8px 0 0 18px;color:var(--muted)}
-    .notice{padding:10px;border-radius:8px;background:#fff6e6;color:#7a4f00;border:1px solid rgba(217,168,24,0.12)}
-    .result{margin-top:12px;padding:12px;border-radius:8px;background:#f8fafc;border:1px solid #e6eef8}
-    .ok{color:var(--ok);font-weight:600}
-    .danger{color:var(--danger);font-weight:600}
-    footer{font-size:13px;color:var(--muted);margin-top:8px}
-    .copy-hint{font-size:12px;color:var(--muted);margin-top:6px}
-    pre{background:#0f172a;color:#f8fafc;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+    /* Mobile screenshot-like styling */
+    :root{
+      --bg:#ffffff;
+      --accent:#d9a818; /* yellow/gold from screenshot */
+      --card:#ffffff;
+      --muted:#6b7280;
+      --dark:#0f172a;
+      --glass: rgba(15,23,42,0.03);
+      --btn-dark:#0b1320;
+      --btn-light:#ffffff;
+      --border: rgba(15,23,42,0.06);
+      --success:#16a34a;
+    }
+    html,body{height:100%;margin:0;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f3f5f9; color:var(--dark);}
+    .screen{width:420px;max-width:96%;margin:24px auto;border-radius:14px;background:var(--bg);box-shadow:0 14px 30px rgba(12,18,34,0.08);overflow:hidden}
+    .panel{padding:28px 22px 18px}
+    .icon-wrap{width:84px;height:84px;border-radius:999px;background:linear-gradient(180deg,#f8e6a8,#e9c948);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;border:4px solid rgba(0,0,0,0.03)}
+    .clock{width:30px;height:30px;border-radius:4px;background:transparent;display:block;position:relative}
+    .clock:before{content:'';position:absolute;left:50%;top:11%;width:3px;height:10px;background:#fff;transform-origin:bottom center;transform:translateX(-50%) rotate(30deg);border-radius:2px}
+    .clock:after{content:'';position:absolute;left:50%;top:24%;width:3px;height:8px;background:#fff;transform-origin:bottom center;transform:translateX(-50%) rotate(-60deg);border-radius:2px}
+    .title{text-align:center;color:var(--accent);font-weight:700;margin:0 0 8px;font-size:18px}
+    .large-number{text-align:center;font-weight:700;font-size:42px;margin:0 0 6px}
+    .muted{text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px}
+    .card{background:linear-gradient(180deg, #ffffff, #fbfbfb);border-radius:12px;padding:14px;border:1px solid var(--border);max-width:360px;margin:0 auto 18px;box-shadow:0 6px 18px rgba(12,18,34,0.03)}
+    .row{display:flex;justify-content:space-between;align-items:center;margin:6px 0;font-size:14px}
+    .label{color:var(--muted);font-size:12px}
+    .value{color:var(--dark);font-weight:600;text-align:right}
+    .value.small{font-weight:500;color:var(--muted);font-size:13px}
+    .recipient{word-break:break-all;font-family:monospace;font-size:13px}
+    .buttons{display:flex;gap:12px;padding:18px;background:linear-gradient(180deg,#ffffff,#fafafa);justify-content:space-between;border-top:1px solid rgba(15,23,42,0.03)}
+    .btn{flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--btn-dark);color:var(--btn-light);box-shadow:0 6px 16px rgba(11,19,32,0.18)}
+    .btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--dark)}
+    .note{font-size:13px;color:var(--muted);text-align:center;margin:10px 18px}
+    .fee-line{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px}
+    .chip{padding:6px 10px;border-radius:999px;background:#fff;border:1px solid rgba(15,23,42,0.04);font-weight:700}
+    .status-ok{color:var(--success);font-weight:700}
+    .small-muted{font-size:12px;color:var(--muted)}
+    .copy-btn{background:#eef2ff;border:1px solid rgba(30,41,59,0.06);padding:6px 8px;border-radius:8px;font-weight:600;cursor:pointer}
+    .footer{font-size:12px;color:var(--muted);padding:10px 18px 18px;text-align:center}
+    /* responsive smaller */
+    @media (max-width:420px){ .screen{margin:12px} .large-number{font-size:36px} }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>USDT (TRC20)</h1>
-      <p class="lead">Prepare and validate a TRC20 USDT transfer and TRX fee requirements before sending large amounts.</p>
+  <div class="screen" role="region" aria-label="Transaction processing preview">
+    <div class="panel">
+      <div class="icon-wrap"><span class="clock" aria-hidden="true"></span></div>
 
-      <div class="row">
-        <div class="col">
-          <label for="amount">Amount to Send (USDT)</label>
-          <input id="amount" type="number" step="0.01" value="35000" />
-        </div>
-        <div class="col">
-          <label for="address">Recipient Address (TRON)</label>
-          <div style="display:flex;gap:8px">
-            <input id="address" type="text" value="TKVwcWjCUrZTopBPN5Gf4AiPXxqfzuUniH" />
-            <button class="small-btn" onclick="copyAddress()">Copy</button>
+      <h2 class="title">Transaction processing</h2>
+
+      <!-- Primary big amount: user asked to send 35,000 USDT -->
+      <div class="large-number" id="primaryAmount">35,000 USDT</div>
+      <div class="muted">Sending (TRC20) — verify network before confirming</div>
+
+      <!-- cloned detail card (inspired by image) -->
+      <div class="card" id="detailCard">
+        <div class="row"><div class="label">Network</div><div class="value">TRON</div></div>
+        <div class="row"><div class="label">Recipient address</div>
+          <div style="text-align:right">
+            <div class="recipient" id="recipientAddress">TKVwcWjCUrZTopBPN5Gf4AiPXxqfzuUniH</div>
+            <div style="margin-top:6px"><button class="copy-btn" onclick="copyAddr()">Copy address</button></div>
           </div>
-          <div class="copy-hint">Copy/paste only — check first and last 4 characters after paste.</div>
+        </div>
+
+        <div class="row"><div class="label">Recipient name</div><div class="value small">CryptoCurrency Team</div></div>
+        <div class="row"><div class="label">Receiving amount</div><div class="value">35,000 USDT</div></div>
+
+        <!-- Network fee block (adapted to show total, paid, remaining) -->
+        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(15,23,42,0.04)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div class="label">Network fee (TRX)</div>
+            <div class="value small">Total: <strong id="feeTotal">50</strong> TRX</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <div style="flex:1">
+              <div class="small-muted">Already paid / locked</div>
+              <div class="value" id="feePaid">20 TRX</div>
+            </div>
+            <div style="flex:1;text-align:right">
+              <div class="small-muted">Remaining</div>
+              <div class="value status-ok" id="feeRemaining">30 TRX</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div style="margin-top:14px" class="row">
-        <div class="col">
-          <label for="feeTotal">Total Network Fee Required (TRX)</label>
-          <input id="feeTotal" type="number" step="0.0001" value="50" />
-        </div>
-        <div class="col">
-          <label for="feePaid">TRX Already Paid / Locked (TRX)</label>
-          <input id="feePaid" type="number" step="0.0001" value="20" />
-        </div>
-        <div class="col">
-          <label for="trxBalance">TRX Balance in Wallet (TRX)</label>
-          <input id="trxBalance" type="number" step="0.0001" value="20" />
-        </div>
-      </div>
+      <div class="note">Make sure you have enough TRX in your wallet to cover the remaining fee before initiating.</div>
 
-      <div style="margin-top:14px" class="row summary">
-        <div>
-          <div class="big" id="remainingDisplay">Remaining TRX needed: <span id="remaining">30</span> TRX</div>
-          <div class="muted">If remaining &gt; 0, you must top up TRX before sending.</div>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <button onclick="recalc()">Recalculate</button>
-          <button class="secondary" onclick="fillExample()">Values</button>
-        </div>
-      </div>
+    </div>
 
-      <div class="result" id="resultBox">
-        <div><strong>Quick check:</strong></div>
-        <div id="checklist"></div>
-      </div>
+    <div class="buttons" role="group" aria-label="actions">
+      <button class="btn ghost" onclick="checkDetails()">Check details</button>
+      <button class="btn primary" onclick="goPortfolio()">Go to portfolio</button>
+    </div>
 
-      <div class="checklist">
-        <div class="notice"><strong>Safety first:</strong> Do a small test transfer (e.g., 10–50 USDT) before sending the full amount. Never share private keys or seed phrases.</div>
-        <ul>
-          <li>Confirm network = TRON / TRC20</li>
-          <li>Confirm address exactly: copy & paste only</li>
-          <li>Verify whether the platform will deduct fee from TRX balance or from USDT (platform-dependent)</li>
-          <li>Save TxID and screenshots for support if anything goes wrong</li>
-        </ul>
-      </div>
-
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button onclick="generatePayload()">Generate JSON Payload</button>
-        <button class="secondary" onclick="showTxSample()">Show Sample Tx/Note</button>
-      </div>
-
-      <div id="payload" style="margin-top:12px"></div>
-      <footer>Tip: Verify transactions on Tronscan (https://tronscan.org) using the TxID after sending.</footer>
+    <div class="footer">
+      Tip: Send a small test transfer first. After sending, verify using a TRON explorer (tronscan.org).
     </div>
   </div>
 
   <script>
-    function recalc() {
-      const feeTotal = parseFloat(document.getElementById('feeTotal').value) || 0;
-      const feePaid = parseFloat(document.getElementById('feePaid').value) || 0;
-      const trxBalance = parseFloat(document.getElementById('trxBalance').value) || 0;
+    // Initialize values from "user request"
+    const state = {
+      tokenAmount: "35,000 USDT",
+      network: "TRON",
+      recipient: "TKVwcWjCUrZTopBPN5Gf4AiPXxqfzuUniH",
+      recipientName: "CryptoCurrency Team",
+      feeTotal: 50.0,
+      feePaid: 20.0
+    };
 
-      const remainingNeeded = Math.max(0, feeTotal - feePaid);
-      document.getElementById('remaining').textContent = remainingNeeded.toFixed(6).replace(/\.?0+$/,"");
+    function formatNumber(n){
+      if (Number.isInteger(n)) return n.toString();
+      return Number(n).toFixed(6).replace(/\.?0+$/,"");
+    }
 
-      // Wallet sufficiency check
-      const walletShort = Math.max(0, remainingNeeded - trxBalance);
+    function calcRemaining(){
+      const rem = Math.max(0, state.feeTotal - state.feePaid);
+      return rem;
+    }
 
-      const checklist = [];
-      checklist.push(`<div>Fee total required: <strong>${feeTotal} TRX</strong></div>`);
-      checklist.push(`<div>Already paid/locked: <strong>${feePaid} TRX</strong></div>`);
-      checklist.push(`<div>Remaining required for this withdrawal: <strong>${remainingNeeded} TRX</strong></div>`);
-      checklist.push(`<div>TRX in wallet: <strong>${trxBalance} TRX</strong></div>`);
+    function render(){
+      document.getElementById('primaryAmount').textContent = state.tokenAmount;
+      document.getElementById('recipientAddress').textContent = state.recipient;
+      document.getElementById('feeTotal').textContent = formatNumber(state.feeTotal);
+      document.getElementById('feePaid').textContent = formatNumber(state.feePaid) + " TRX";
+      document.getElementById('feeRemaining').textContent = formatNumber(calcRemaining()) + " TRX";
 
-      if (walletShort > 0.0000001) {
-        checklist.push(`<div class="danger">You need to add <strong>${walletShort.toFixed(6)}</strong> TRX to your wallet before the withdrawal will proceed.</div>`);
+      // color remaining if > 0
+      const remEl = document.getElementById('feeRemaining');
+      if (calcRemaining() > 0) {
+        remEl.classList.add('status-ok');
       } else {
-        checklist.push(`<div class="ok">Your TRX balance is sufficient to cover the remaining fee.</div>`);
+        remEl.classList.remove('status-ok');
       }
-
-      checklist.push(`<div style="margin-top:8px">Suggested action: <strong>${walletShort > 0.0000001 ? 'Top up TRX and retry the withdrawal' : 'Proceed with test transfer then full transfer'}</strong></div>`);
-
-      document.getElementById('checklist').innerHTML = checklist.join('');
     }
 
-    function copyAddress() {
-      const addr = document.getElementById('address').value;
-      navigator.clipboard?.writeText(addr).then(() => {
-        alert('Address copied to clipboard:\n' + addr);
-      }).catch(()=>{ prompt('Copy the address manually:', addr); });
+    function copyAddr(){
+      const addr = state.recipient;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(()=> {
+          alert('Address copied to clipboard:\n' + addr);
+        }).catch(()=> prompt('Copy the address manually:', addr));
+      } else {
+        prompt('Copy the address manually:', addr);
+      }
     }
 
-    function fillExample(){
-      document.getElementById('amount').value = '35000';
-      document.getElementById('address').value = 'TKVwcWjCUrZTopBPN5Gf4AiPXxqfzuUniH';
-      document.getElementById('feeTotal').value = '50';
-      document.getElementById('feePaid').value = '20';
-      document.getElementById('trxBalance').value = '20';
-      recalc();
+    function checkDetails(){
+      // open a small info modal using alert (keeps file self-contained)
+      alert(
+        'Check details:\\n' +
+        'Network: ' + state.network + '\\n' +
+        'Recipient: ' + state.recipient + '\\n' +
+        'Receiving amount: ' + state.tokenAmount + '\\n' +
+        'Network fee total: ' + state.feeTotal + ' TRX\\n' +
+        'Already paid: ' + state.feePaid + ' TRX\\n' +
+        'Remaining: ' + calcRemaining() + ' TRX'
+      );
     }
 
-    function generatePayload(){
-      const payload = {
-        token: 'USDT (TRC20)',
-        amount: Number(document.getElementById('amount').value) || 0,
-        recipient_address: document.getElementById('address').value.trim(),
-        fee_total_trx: Number(document.getElementById('feeTotal').value) || 0,
-        fee_paid_trx: Number(document.getElementById('feePaid').value) || 0
-      };
-      const remaining = Math.max(0, payload.fee_total_trx - payload.fee_paid_trx);
-      payload.remaining_fee_trx = remaining;
-      document.getElementById('payload').innerHTML = '<pre>' + JSON.stringify(payload, null, 2) + '</pre>';
+    function goPortfolio(){
+      alert('Open your wallet / exchange portfolio to top up TRX or view balances.');
     }
 
-    function showTxSample(){
-      const address = document.getElementById('address').value.trim();
-      const amount = Number(document.getElementById('amount').value) || 0;
-      const sample = [
-        'Sample withdrawal note (what to check before sending):',
-        '',
-        `Network: TRON (TRC20)`,
-        `Recipient address: ${address}`,
-        `Amount: ${amount} USDT (TRC20)`,
-        `Network fee: ${document.getElementById('feeTotal').value} TRX (confirm on your platform)`,
-        '',
-        'Recommended: Send a small test transfer (10–50 USDT). After confirmation, send the full amount.',
-        '',
-        'After sending: copy TxID and verify on tronscan.org'
-      ].join('\\n');
-      alert(sample);
-    }
+    // allow quick live editing from console if needed:
+    window.txState = state;
+    window.renderTx = render;
 
-    // Initialize with example values on load
-    fillExample();
+    // initial render
+    render();
   </script>
 </body>
 </html>
